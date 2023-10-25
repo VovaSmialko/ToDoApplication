@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ToDoApplication</string>
+    <string name="add_new_todo_item">Add new todo item</string>
+    <string name="show_completed">Show Completed</string>
+    <string name="strike"> Набити хабло путіну <strike>For Geeks </strike> </string>
+    <string name="app_name_title">Todo</string>
 </resources>
