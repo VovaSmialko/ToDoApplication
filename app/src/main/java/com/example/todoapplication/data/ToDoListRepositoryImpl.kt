@@ -4,17 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.todoapplication.domain.ToDoItem
 import com.example.todoapplication.domain.ToDoListRepository
+import kotlin.random.Random
 
 object ToDoListRepositoryImpl : ToDoListRepository {
     private val toDoListLD = MutableLiveData<List<ToDoItem>>()
 
-    private val toDoList = mutableListOf<ToDoItem>()
+    private val toDoList = sortedSetOf<ToDoItem>({ p0, p1 -> p0.id.compareTo(p1.id) })
 
     private var autoIncrementId = 0
 
     init {
-        for (i in 0 until 10) {
-            val item = ToDoItem("Name $i", i, true)
+        for (i in 0 until 30) {
+            val item = ToDoItem("Name $i", i, Random.nextBoolean())
             addToDoItem(item)
         }
     }
