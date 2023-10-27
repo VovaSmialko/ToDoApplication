@@ -4,4 +4,5 @@
     <string name="show_completed">Show Completed</string>
     <string name="strike"> Набити хабло путіну <strike>For Geeks </strike> </string>
     <string name="app_name_title">Todo</string>
+    <string name="completed">Completed</string>
 </resources>
