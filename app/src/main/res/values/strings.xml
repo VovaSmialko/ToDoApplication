@@ -5,4 +5,7 @@
     <string name="strike"> Набити хабло путіну <strike>For Geeks </strike> </string>
     <string name="app_name_title">Todo</string>
     <string name="completed">Completed</string>
+    <string name="hint_name">Name:</string>
+    <string name="count_hint">Count:</string>
+    <string name="save_button">Save</string>
 </resources>
