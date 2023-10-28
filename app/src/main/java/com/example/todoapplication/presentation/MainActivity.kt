@@ -1,12 +1,16 @@
 package com.example.todoapplication.presentation
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapplication.R
+import com.example.todoapplication.domain.ToDoItem
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +24,18 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.toDoList.observe(this) {
             toDoListAdapter.submitList(it)
+        }
+
+        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_todo_item)
+        buttonAddItem.setOnClickListener {
+            val intent = ToDoItemActivity.newIntentAddItem(this)
+            startActivity(intent)
+        }
+
+        val tvCompletedItem = findViewById<TextView>(R.id.show_completed)
+        tvCompletedItem.setOnClickListener {
+            val intent = ToDoItemCompleted.newIntentShowCompleted(this)
+            startActivity(intent)
         }
     }
 
@@ -68,13 +84,27 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         toDoListAdapter.onToDOItemClickListener = {
-            Log.d("MainActivity", it.toString())
+            val intent = ToDoItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
     }
 
     private fun setupLongClickListener() {
         toDoListAdapter.onToDOItemLongClickListener = {
             viewModel.changeCompleteState(it)
+        }
+    }
+
+    companion object {
+
+        private const val MAIN_SCREEN = "main_screen"
+        private const val MODE_MAIN = "mode_main"
+
+
+        fun newIntentShowActive(context: Context): Intent {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.putExtra(MAIN_SCREEN, MODE_MAIN)
+            return intent
         }
     }
 }

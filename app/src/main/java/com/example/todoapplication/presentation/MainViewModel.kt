@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.todoapplication.data.ToDoListRepositoryImpl
 import com.example.todoapplication.domain.DeleteToDoItemUseCase
 import com.example.todoapplication.domain.EditToDoItemUseCase
+import com.example.todoapplication.domain.GetToDoItemUseCase
 import com.example.todoapplication.domain.GetToDoListUseCase
 import com.example.todoapplication.domain.ToDoItem
 
@@ -18,6 +19,7 @@ class MainViewModel : ViewModel() {
     private val editToDoItemUseCase = EditToDoItemUseCase(repository)
 
     val toDoList = getToDoListUseCase.getToDoList()
+
 
     fun deleteToDoItem(toDoItem: ToDoItem) {
         deleteToDoItemUseCase.deleteToDoItem(toDoItem)

@@ -2,10 +2,14 @@
     <string name="app_name">ToDoApplication</string>
     <string name="add_new_todo_item">Add new todo item</string>
     <string name="show_completed">Show Completed</string>
-    <string name="strike"> Набити хабло путіну <strike>For Geeks </strike> </string>
+    <string name="strike"> Набити їбало путіну <strike>For Geeks </strike> </string>
     <string name="app_name_title">Todo</string>
     <string name="completed">Completed</string>
     <string name="hint_name">Name:</string>
     <string name="count_hint">Count:</string>
     <string name="save_button">Save</string>
+    <string name="completed_activity">Completed</string>
+    <string name="show_active">Show active</string>
+    <string name="error_input_name">Invalid name</string>
+    <string name="error_input_count">Invalid count</string>
 </resources>
