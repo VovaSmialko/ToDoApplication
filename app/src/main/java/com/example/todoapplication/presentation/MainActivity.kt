@@ -4,7 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -12,14 +15,16 @@ import com.example.todoapplication.R
 import com.example.todoapplication.domain.ToDoItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ToDoItemFragment.OnEditingFinishedListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var toDoListAdapter: ToDoListAdapter
+    private var todoItemContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        todoItemContainer = findViewById(R.id.todo_item_container)
         setupRecyclerView()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.toDoList.observe(this) {
@@ -28,15 +33,35 @@ class MainActivity : AppCompatActivity() {
 
         val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_todo_item)
         buttonAddItem.setOnClickListener {
-            val intent = ToDoItemActivity.newIntentAddItem(this)
-            startActivity(intent)
+            if (isOnePainMode()) {
+                val intent = ToDoItemActivity.newIntentAddItem(this)
+                startActivity(intent)
+            } else {
+                launchFragment(ToDoItemFragment.newInstanceAddItem())
+            }
         }
-
         val tvCompletedItem = findViewById<TextView>(R.id.show_completed)
         tvCompletedItem.setOnClickListener {
             val intent = ToDoItemCompleted.newIntentShowCompleted(this)
             startActivity(intent)
         }
+    }
+
+    override fun onEditingFinished() {
+        Toast.makeText(this@MainActivity, "Success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
+    }
+
+    private fun isOnePainMode(): Boolean {
+        return todoItemContainer == null
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.todo_item_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
 
@@ -84,8 +109,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         toDoListAdapter.onToDOItemClickListener = {
-            val intent = ToDoItemActivity.newIntentEditItem(this, it.id)
-            startActivity(intent)
+            if (isOnePainMode()) {
+                val intent = ToDoItemActivity.newIntentEditItem(this, it.id)
+                startActivity(intent)
+            } else {
+                launchFragment(ToDoItemFragment.newInstanceEdiItem(it.id))
+            }
         }
     }
 

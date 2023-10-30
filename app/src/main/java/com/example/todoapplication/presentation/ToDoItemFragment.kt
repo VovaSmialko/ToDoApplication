@@ -1,5 +1,6 @@
 package com.example.todoapplication.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,11 +14,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.todoapplication.R
 import com.example.todoapplication.domain.ToDoItem
 import com.google.android.material.textfield.TextInputLayout
-import java.lang.RuntimeException
+import kotlin.RuntimeException
 
 class ToDoItemFragment() : Fragment() {
 
     private lateinit var viewModel: ToDoItemViewModel
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
     private lateinit var tilName: TextInputLayout
     private lateinit var tilCount: TextInputLayout
@@ -27,6 +29,15 @@ class ToDoItemFragment() : Fragment() {
 
     private var screenMode: String = MODE_UNKNOWN
     private var toDoItemId: Int = ToDoItem.UNDEFINED_ID
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        } else {
+            throw RuntimeException("Activity must implement onEditingFinishedListener")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +79,7 @@ class ToDoItemFragment() : Fragment() {
             tilName.error = message
         }
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onEditingFinishedListener.onEditingFinished()
         }
     }
 
@@ -147,6 +158,10 @@ class ToDoItemFragment() : Fragment() {
         etName = view.findViewById(R.id.et_name)
         etCount = view.findViewById(R.id.et_count)
         buttonSave = view.findViewById(R.id.save_button)
+    }
+
+    interface OnEditingFinishedListener {
+        fun onEditingFinished()
     }
 
     companion object {

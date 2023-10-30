@@ -16,15 +16,8 @@ import com.example.todoapplication.domain.ToDoItem
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.RuntimeException
 
-class ToDoItemActivity : AppCompatActivity() {
+class ToDoItemActivity : AppCompatActivity(), ToDoItemFragment.OnEditingFinishedListener {
 
-    private lateinit var viewModel: ToDoItemViewModel
-
-//    private lateinit var tilName: TextInputLayout
-//    private lateinit var tilCount: TextInputLayout
-//    private lateinit var etName: EditText
-//    private lateinit var etCount: EditText
-//    private lateinit var buttonSave: Button
 
     private var screenMode = MODE_UNKNOWN
     private var toDoItemId = ToDoItem.UNDEFINED_ID
@@ -32,35 +25,15 @@ class ToDoItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_to_do_item)
         parseIntent()
-//        viewModel = ViewModelProvider(this)[ToDoItemViewModel::class.java]
-//        initViews()
-//        addTextChangeListeners()
-        launchRightMode()
-//        observeViewModel()
+        if (savedInstanceState == null) {
+            launchRightMode()
+        }
     }
 
-    //    private fun observeViewModel() {
-//        viewModel.errorInputCount.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.error_input_count)
-//            } else {
-//                null
-//            }
-//            tilCount.error = message
-//        }
-//        viewModel.errorInputName.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.error_input_name)
-//            } else {
-//                null
-//            }
-//            tilName.error = message
-//        }
-//        viewModel.shouldCloseScreen.observe(this) {
-//            finish()
-//        }
-//    }
-//
+    override fun onEditingFinished() {
+        finish()
+    }
+
     private fun launchRightMode() {
         val fragment = when (screenMode) {
             MODE_EDIT -> ToDoItemFragment.newInstanceEdiItem(toDoItemId)
@@ -68,52 +41,9 @@ class ToDoItemActivity : AppCompatActivity() {
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.todo_item_container, fragment)
+            .replace(R.id.todo_item_container, fragment)
             .commit()
     }
-//
-//    private fun addTextChangeListeners() {
-//        etName.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//            }
-//
-//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                viewModel.resetErrorInputName()
-//            }
-//
-//            override fun afterTextChanged(p0: Editable?) {
-//            }
-//        })
-//        etCount.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//            }
-//
-//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-//                viewModel.resetErrorInputCount()
-//            }
-//
-//            override fun afterTextChanged(p0: Editable?) {
-//            }
-//        })
-//    }
-//
-//
-//    private fun launchEditMode() {
-//        viewModel.getToDoItem(toDoItemId)
-//        viewModel.todoItem.observe(this) {
-//            etName.setText(it.name)
-//            etCount.setText(it.count.toString())
-//        }
-//        buttonSave.setOnClickListener {
-//            viewModel.editToDoItem(etName.text?.toString(), etCount.text?.toString())
-//        }
-//    }
-//
-//    private fun launchAddMode() {
-//        buttonSave.setOnClickListener {
-//            viewModel.addToDoItem(etName.text?.toString(), etCount.text?.toString())
-//        }
-//    }
 
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
@@ -131,15 +61,7 @@ class ToDoItemActivity : AppCompatActivity() {
             toDoItemId = intent.getIntExtra(EXTRA_TODO_ITEM_ID, ToDoItem.UNDEFINED_ID)
         }
     }
-//
-//
-//    private fun initViews() {
-//        tilName = findViewById(R.id.til_name)
-//        tilCount = findViewById(R.id.til_count)
-//        etName = findViewById(R.id.et_name)
-//        etCount = findViewById(R.id.et_count)
-//        buttonSave = findViewById(R.id.save_button)
-//    }
+
 
     companion object {
 
