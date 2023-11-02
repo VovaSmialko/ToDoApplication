@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapplication.R
+import com.example.todoapplication.databinding.ActivityMainBinding
 import com.example.todoapplication.domain.ToDoItem
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -19,20 +20,18 @@ class MainActivity : AppCompatActivity(), ToDoItemFragment.OnEditingFinishedList
 
     private lateinit var viewModel: MainViewModel
     private lateinit var toDoListAdapter: ToDoListAdapter
-    private var todoItemContainer: FragmentContainerView? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        todoItemContainer = findViewById(R.id.todo_item_container)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupRecyclerView()
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.toDoList.observe(this) {
             toDoListAdapter.submitList(it)
         }
-
-        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_todo_item)
-        buttonAddItem.setOnClickListener {
+        binding.buttonAddTodoItem.setOnClickListener {
             if (isOnePainMode()) {
                 val intent = ToDoItemActivity.newIntentAddItem(this)
                 startActivity(intent)
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity(), ToDoItemFragment.OnEditingFinishedList
     }
 
     private fun isOnePainMode(): Boolean {
-        return todoItemContainer == null
+        return binding.todoItemContainer == null
     }
 
     private fun launchFragment(fragment: Fragment) {
@@ -66,8 +65,7 @@ class MainActivity : AppCompatActivity(), ToDoItemFragment.OnEditingFinishedList
 
 
     private fun setupRecyclerView() {
-        val rvToDoList = findViewById<RecyclerView>(R.id.rv_todo_list)
-        with(rvToDoList) {
+        with(binding.rvTodoList) {
             toDoListAdapter = ToDoListAdapter()
             adapter = toDoListAdapter
             recycledViewPool.setMaxRecycledViews(
@@ -81,7 +79,7 @@ class MainActivity : AppCompatActivity(), ToDoItemFragment.OnEditingFinishedList
         }
         setupLongClickListener()
         setupClickListener()
-        setupSwipeListener(rvToDoList)
+        setupSwipeListener(binding.rvTodoList)
     }
 
     private fun setupSwipeListener(rvToDoList: RecyclerView?) {
