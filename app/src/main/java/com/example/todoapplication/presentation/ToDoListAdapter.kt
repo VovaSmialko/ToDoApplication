@@ -2,8 +2,12 @@ package com.example.todoapplication.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.example.todoapplication.R
+import com.example.todoapplication.databinding.ItemTodoDisabledBinding
+import com.example.todoapplication.databinding.ItemTodoEnabledBinding
 import com.example.todoapplication.domain.ToDoItem
 
 class ToDoListAdapter :
@@ -18,21 +22,34 @@ class ToDoListAdapter :
             VIEW_TYPE_ACTIVE -> R.layout.item_todo_enabled
             else -> throw RuntimeException("Unknown view type: $viewType")
         }
-        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-        return ToDoItemViewHolder(view)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layout,
+            parent,
+            false
+        )
+        return ToDoItemViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ToDoItemViewHolder, position: Int) {
         val toDoItem = getItem(position)
-        viewHolder.view.setOnLongClickListener {
+        val binding = viewHolder.binding
+        binding.root.setOnLongClickListener {
             onToDOItemLongClickListener?.invoke(toDoItem)
             true
         }
-        viewHolder.view.setOnClickListener {
+        binding.root.setOnClickListener {
             onToDOItemClickListener?.invoke(toDoItem)
         }
-        viewHolder.tvName.text = toDoItem.name
-        viewHolder.tvCount.text = toDoItem.count.toString()
+        when (binding) {
+            is ItemTodoDisabledBinding -> {
+                binding.toDoItem = toDoItem
+            }
+
+            is ItemTodoEnabledBinding -> {
+                binding.toDoItem = toDoItem
+            }
+        }
     }
 
 
