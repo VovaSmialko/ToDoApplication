@@ -1,55 +1,41 @@
 package com.example.todoapplication.data
 
+import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.todoapplication.domain.ToDoItem
 import com.example.todoapplication.domain.ToDoListRepository
 import kotlin.random.Random
 
-object ToDoListRepositoryImpl : ToDoListRepository {
-    private val toDoListLD = MutableLiveData<List<ToDoItem>>()
+class ToDoListRepositoryImpl(
+    application: Application
+) : ToDoListRepository {
 
-    private val toDoList = sortedSetOf<ToDoItem>({ p0, p1 -> p0.id.compareTo(p1.id) })
+    private val toDoListDao = AppDatabase.getInstance(application).toDoListDao()
 
-    private var autoIncrementId = 0
+    private val mapper = ToDoListMapper()
 
-    init {
-        for (i in 0 until 30) {
-            val item = ToDoItem("Name $i", i, Random.nextBoolean())
-            addToDoItem(item)
+    override suspend fun addToDoItem(toDoItem: ToDoItem) {
+        toDoListDao.addToDoItem(mapper.mapEntityToDbModel(toDoItem))
+    }
+
+    override suspend fun deleteToDoItem(toDoItem: ToDoItem) {
+        toDoListDao.deleteToDoItem(toDoItem.id)
+    }
+
+    override suspend fun editTodoItem(toDoItem: ToDoItem) {
+        toDoListDao.addToDoItem(mapper.mapEntityToDbModel(toDoItem))
+    }
+
+    override suspend fun getToDoItem(toDoItemId: Int): ToDoItem {
+        val dbModel = toDoListDao.getToDoItem(toDoItemId)
+        return mapper.mapDbModelToEntity(dbModel)
+    }
+
+    override fun getToDoList(): LiveData<List<ToDoItem>> = MediatorLiveData<List<ToDoItem>>().apply {
+        addSource(toDoListDao.getToDoList()) {
+            value = mapper.mapListDbModelToListEntity(it)
         }
-    }
-
-    override fun addToDoItem(toDoItem: ToDoItem) {
-        if (toDoItem.id == ToDoItem.UNDEFINED_ID) {
-            toDoItem.id = autoIncrementId++
-        }
-        toDoList.add(toDoItem)
-        updateList()
-    }
-
-    override fun deleteToDoItem(toDoItem: ToDoItem) {
-        toDoList.remove(toDoItem)
-        updateList()
-    }
-
-    override fun editTodoItem(toDoItem: ToDoItem) {
-        val oldElement = getToDoItem(toDoItem.id)
-        toDoList.remove(oldElement)
-        addToDoItem(toDoItem)
-    }
-
-    override fun getToDoItem(toDoItemId: Int): ToDoItem {
-        return toDoList.find {
-            it.id == toDoItemId
-        } ?: throw RuntimeException("Element with $toDoItemId not found")
-    }
-
-    override fun getToDoList(): LiveData<List<ToDoItem>> {
-        return toDoListLD
-    }
-
-    private fun updateList() {
-        toDoListLD.value = toDoList.toList()
     }
 }

@@ -1,18 +1,25 @@
 package com.example.todoapplication.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.todoapplication.data.ToDoListRepositoryImpl
 import com.example.todoapplication.domain.AddToDoItemUseCase
 import com.example.todoapplication.domain.EditToDoItemUseCase
 import com.example.todoapplication.domain.GetToDoItemUseCase
 import com.example.todoapplication.domain.ToDoItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class ToDoItemViewModel : ViewModel() {
+class ToDoItemViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = ToDoListRepositoryImpl
+    private val repository = ToDoListRepositoryImpl(application)
 
     private val getToDoItemUseCase = GetToDoItemUseCase(repository)
     private val editToDoItemUseCase = EditToDoItemUseCase(repository)
@@ -35,13 +42,17 @@ class ToDoItemViewModel : ViewModel() {
         get() = _shouldCloseScreen
 
     fun getToDoItem(toDoItemId: Int) {
-        val item = getToDoItemUseCase.getToDoItem(toDoItemId)
-        _toDoItem.value = item
+        viewModelScope.launch {
+            val item = getToDoItemUseCase.getToDoItem(toDoItemId)
+            _toDoItem.value = item
+        }
     }
 
     fun getToDoCompletedItem(toDoItemId: Int) {
-        val itemCompleted = getToDoItemUseCase.getToDoItem(toDoItemId)
-        _toDoItem.value = itemCompleted
+        viewModelScope.launch {
+            val itemCompleted = getToDoItemUseCase.getToDoItem(toDoItemId)
+            _toDoItem.value = itemCompleted
+        }
     }
 
     fun addToDoItem(inputName: String?, inputCount: String?) {
@@ -49,9 +60,11 @@ class ToDoItemViewModel : ViewModel() {
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-            val toDoItem = ToDoItem(name, count, true)
-            addToDoItemUseCase.addToDoItem(toDoItem)
-            finishWork()
+            viewModelScope.launch {
+                val toDoItem = ToDoItem(name, count, true)
+                addToDoItemUseCase.addToDoItem(toDoItem)
+                finishWork()
+            }
         }
     }
 
@@ -61,9 +74,11 @@ class ToDoItemViewModel : ViewModel() {
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
             _toDoItem.value?.let {
-                val item = it.copy(name = name, count = count)
-                editToDoItemUseCase.editTodoItem(item)
-                finishWork()
+                viewModelScope.launch {
+                    val item = it.copy(name = name, count = count)
+                    editToDoItemUseCase.editTodoItem(item)
+                    finishWork()
+                }
             }
         }
     }
