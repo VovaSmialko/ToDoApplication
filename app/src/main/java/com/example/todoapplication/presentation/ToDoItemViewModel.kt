@@ -48,13 +48,6 @@ class ToDoItemViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun getToDoCompletedItem(toDoItemId: Int) {
-        viewModelScope.launch {
-            val itemCompleted = getToDoItemUseCase.getToDoItem(toDoItemId)
-            _toDoItem.value = itemCompleted
-        }
-    }
-
     fun addToDoItem(inputName: String?, inputCount: String?) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)

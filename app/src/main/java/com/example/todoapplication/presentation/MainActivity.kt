@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity(), ToDoItemFragment.OnEditingFinishedList
                 startActivity(intent)
             } else {
                 launchFragment(ToDoItemFragment.newInstanceAddItem())
-            }
+            } 
         }
         val tvCompletedItem = findViewById<TextView>(R.id.show_completed)
         tvCompletedItem.setOnClickListener {
